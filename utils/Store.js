@@ -1,11 +1,13 @@
 import { createContext, useReducer } from 'react';
-// import Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 
 export const Store = createContext();
 const initialState = {
   // darkMode: Cookies.get('darkMode') === 'ON' ? true : false,
   cart: {
-    cartItems: [],
+    cartItems: Cookies.get('cartItems')
+      ? JSON.parse(Cookies.get('cartItems'))
+      : [],
   },
 };
 
@@ -28,6 +30,7 @@ function reducer(state, action) {
           )
         : [...state.cart.cartItems, newItem];
 
+      Cookies.set('cartItems', JSON.stringify(cartItems));
       return { ...state, cart: { ...state.cart, cartItems } };
     }
     default:
@@ -40,3 +43,8 @@ export function StoreProvider(props) {
   const value = { state, dispatch };
   return <Store.Provider value={value}>{props.children}</Store.Provider>;
 }
+
+// export async function getInitialProps(ctx) {
+//   const { req } = ctx;
+//   console.log(req.cookies.test);
+// }

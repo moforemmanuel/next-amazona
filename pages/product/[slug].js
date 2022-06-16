@@ -44,6 +44,7 @@ export default function ProductScreen(props) {
     });
   };
 
+
   return (
     <Layout title={product.name} description={product.description}>
       <div className={classes.section}>
