@@ -4,8 +4,8 @@ import {
   Typography,
   Container,
   Link,
-  CssBaseline,
   useMediaQuery,
+  Badge,
   // Switch,
 } from '@mui/material';
 import Head from 'next/head';
@@ -14,12 +14,13 @@ import useStyles from '../utils/styles';
 import NextLink from 'next/link';
 import { ShoppingCart } from '@mui/icons-material';
 import { useTheme } from 'next-themes';
-
 import { ThemeSwitch } from '../utils/ThemeSwitch';
+import { Store } from '../utils/Store';
 
 export default function Layout({ title, description, children }) {
   const classes = useStyles();
 
+  const { state } = React.useContext(Store);
   const systemMode = useMediaQuery('(prefers-color-scheme: dark');
 
   const { resolvedTheme, setTheme } = useTheme();
@@ -27,8 +28,8 @@ export default function Layout({ title, description, children }) {
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
   if (!mounted) return null;
-  console.log(systemMode);
 
+  const { cart } = state;
   return (
     <div>
       <Head>
@@ -36,8 +37,6 @@ export default function Layout({ title, description, children }) {
         {description && <meta name="description" content={description}></meta>}
       </Head>
 
-      {/* <ThemeProvider theme={theme}> */}
-      <CssBaseline />
       <AppBar position="static" className={classes.navbar}>
         <Toolbar>
           <NextLink href="/" passHref>
@@ -50,9 +49,6 @@ export default function Layout({ title, description, children }) {
 
           <ThemeSwitch
             checked={resolvedTheme === 'light' ? false : true}
-            // onChange={() =>
-            //   setTheme(resolvedTheme === 'light' ? 'dark' : 'light')
-            // }
             onChange={() => {
               if (systemMode) {
                 setTheme('dark');
@@ -71,22 +67,19 @@ export default function Layout({ title, description, children }) {
             icon={<LightModeIcon />}
             checkedIcon={<DarkModeIcon />}
           ></Switch> */}
-          {/* <Button
-            css={css`
-              background: linear-gradient(
-                to top right,
-                #2a48f3 0%,
-                #c32cc2 100%
-              );
-            `}
-            variant="contained"
-            onClick={() =>
-              setTheme(resolvedTheme === 'light' ? 'dark' : 'light')
-            } 
-          ></Button> */}
+
           <NextLink href="/cart" passHref>
             <Link>
-              <ShoppingCart />
+              {/* <Badge badgeContent={state.cart.cartItems.length || 0}>
+                <ShoppingCart />
+              </Badge> */}
+              {cart.cartItems.length > 0 ? (
+                <Badge color="secondary" badgeContent={cart.cartItems.length}>
+                  Cart
+                </Badge>
+              ) : (
+                'Cart'
+              )}
             </Link>
           </NextLink>
           <NextLink href="/cart" passHref>
@@ -106,7 +99,6 @@ export default function Layout({ title, description, children }) {
       <footer className={classes.footer}>
         <Typography>All rights reserved. Next Amazona</Typography>
       </footer>
-      {/* </ThemeProvider> */}
     </div>
   );
 }

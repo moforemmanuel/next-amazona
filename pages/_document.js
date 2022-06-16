@@ -22,26 +22,25 @@ export default class MyDocument extends Document {
 }
 
 // get initial props
-// MyDocument.getInitialProps = async(ctx) => {
+MyDocument.getInitialProps = async (ctx) => {
+  const sheets = new ServerStyleSheets();
+  // get original render page from context
 
-//     const sheets = new ServerStyleSheets();
-//     // get original render page from context
+  const originalRenderPage = ctx.renderPage;
+  ctx.renderPage = () => {
+    return originalRenderPage({
+      enhanceApp: (App) => (props) => sheets.collect(<App {...props} />),
+    });
+  };
 
-//     const originalRenderPage = ctx.renderPage;
-//     ctx.renderPage = () => {
-//         return originalRenderPage({
-//             enhanceApp: (App) => (props) => sheets.collect(<App {...props} />),
-//         });
-//     };
+  //call get initial props
+  const initialProps = await Document.getInitialProps(ctx);
 
-//     //call get initial props
-//     const initialProps = await Document.getInitialProps(ctx);
-
-//     return {
-//         ...initialProps,
-//         styles: [
-//             ...React.Children.toArray(initialProps.styles),
-//             sheets.getStyleElement(),
-//         ]
-//     }
-// }
+  return {
+    ...initialProps,
+    styles: [
+      ...React.Children.toArray(initialProps.styles),
+      sheets.getStyleElement(),
+    ],
+  };
+};

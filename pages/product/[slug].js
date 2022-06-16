@@ -17,13 +17,13 @@ import Image from 'next/image';
 // import { ArrowBackIosSharp } from '@mui/icons-material';
 import Product from '../../models/Product';
 import db from '../../utils/db';
-// import { Cookies } from 'js-cookie';
-import { setCookies, getCookies } from 'cookies-next';
+import axios from 'axios';
+import { Store } from '../../utils/Store';
 
 export default function ProductScreen(props) {
-  const { product, token } = props;
-  setCookies('token', product.description);
-  console.log(token);
+  const { dispatch } = React.useContext(Store);
+  const { product } = props;
+
   const classes = useStyles();
   // const router = useRouter();
   // const { slug } = router.query;
@@ -33,8 +33,12 @@ export default function ProductScreen(props) {
   }
 
   const addToCartHandler = async () => {
-    // const { data } = await axios.get(`/api/products/${product._id}`);
-    dispatchEvent({
+    const { data } = await axios.get(`/api/products/${product._id}`);
+    if (data.countInStock <= 0) {
+      window.alert('Sorry, item is out of stock');
+      return;
+    }
+    dispatch({
       type: 'CART_ADD_ITEM',
       payload: { ...product, quantity: 1 },
     });
@@ -57,7 +61,7 @@ export default function ProductScreen(props) {
             alt={product.name}
             width={640}
             height={640}
-            Layout="responsive"
+            layout="responsive"
           ></Image>
         </Grid>
 
@@ -131,7 +135,7 @@ export default function ProductScreen(props) {
 }
 
 export async function getServerSideProps(context) {
-  const { params, req } = context;
+  const { params } = context;
   // console.log(context);
   const { slug } = params;
   // console.log(params, slug);
@@ -147,7 +151,6 @@ export async function getServerSideProps(context) {
   return {
     props: {
       product: db.convertDocToObj(product),
-      token: req.cookies.token || '',
     },
   };
 }
