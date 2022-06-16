@@ -75,10 +75,12 @@ export default function Layout({ title, description, children }) {
               </Badge> */}
               {cart.cartItems.length > 0 ? (
                 <Badge color="secondary" badgeContent={cart.cartItems.length}>
-                  Cart
+                  <ShoppingCart />
                 </Badge>
               ) : (
-                'Cart'
+                <Badge color="secondary" badgeContent="0">
+                  <ShoppingCart />
+                </Badge>
               )}
             </Link>
           </NextLink>
