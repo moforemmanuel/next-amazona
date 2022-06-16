@@ -1,4 +1,5 @@
 import React from 'react';
+import dynamic from 'next/dynamic';
 import { Store } from '../utils/Store';
 import Layout from '../components/Layout';
 import {
@@ -18,11 +19,11 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { CloseIcon } from '@mui/icons-material';
+// import { CloseIcon } from '@mui/icons-material';
 import NextLink from 'next/link';
 import Image from 'next/image';
 
-export default function CartScreen() {
+function CartScreen() {
   const { state } = React.useContext(Store);
   const {
     cart: { cartItems },
@@ -124,3 +125,8 @@ export default function CartScreen() {
     </Layout>
   );
 }
+
+//dynamically load cartscreen and turn of ssr for it
+export default dynamic(() => Promise.resolve(CartScreen), {
+  ssr: false,
+});
