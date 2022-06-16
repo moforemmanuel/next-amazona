@@ -19,10 +19,12 @@ import Product from '../../models/Product';
 import db from '../../utils/db';
 import axios from 'axios';
 import { Store } from '../../utils/Store';
+import { useRouter } from 'next/router';
 
 export default function ProductScreen(props) {
   const { dispatch } = React.useContext(Store);
   const { product } = props;
+  const router = useRouter();
 
   const classes = useStyles();
   // const router = useRouter();
@@ -42,6 +44,7 @@ export default function ProductScreen(props) {
       type: 'CART_ADD_ITEM',
       payload: { ...product, quantity: 1 },
     });
+    router.push('/cart');
   };
 
 
