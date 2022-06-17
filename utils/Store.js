@@ -70,6 +70,12 @@ function reducer(state, action) {
       Cookies.set('shippingAddress', JSON.stringify(shippingAddress));
       return { ...state, cart: { ...state.cart, shippingAddress } };
     }
+
+    case 'SAVE_PAYMENT_METHOD': {
+      const paymentMethod = action.payload;
+      Cookies.set('paymentMethod', paymentMethod);
+      return { ...state, cart: { ...state.cart, paymentMethod } };
+    }
     default:
       return state;
   }
