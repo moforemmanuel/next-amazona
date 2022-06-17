@@ -11,9 +11,23 @@ import Layout from '../components/Layout';
 import useStyles from '../utils/styles';
 import NextLink from 'next/link';
 import axios from 'axios';
+import { Store } from '../utils/Store';
+import { useRouter } from 'next/router';
 
 export default function Login() {
   const classes = useStyles();
+  const { state, dispatch } = React.useContext(Store);
+  const { userInfo } = state;
+  const router = useRouter();
+  const { redirect } = router.query;
+
+
+  React.useEffect(() => {
+    if (userInfo) {
+      router.push('/');
+    }
+  }, []);
+
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
@@ -28,7 +42,11 @@ export default function Login() {
         }
         // { headers: { 'Content-Type': 'application/json' } }
       );
-      console.log(data);
+      dispatch({ type: 'USER_LOGIN', payload: data });
+      //set user in cookies, see store for this action.type
+
+      //redirect
+      router.push(redirect);
       alert('Successful Login');
     } catch (err) {
       alert(err.response.data.message);
