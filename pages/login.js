@@ -1,5 +1,6 @@
 import {
   Button,
+  CircularProgress,
   Link,
   List,
   ListItem,
@@ -21,12 +22,11 @@ export default function Login() {
   const router = useRouter();
   const { redirect } = router.query;
 
-
-  React.useEffect(() => {
-    if (userInfo) {
-      router.push('/');
-    }
-  }, []);
+  // React.useEffect(() => {
+  //   if (userInfo) {
+  //     router.push('/');
+  //   }
+  // }, []);
 
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -46,58 +46,73 @@ export default function Login() {
       //set user in cookies, see store for this action.type
 
       //redirect
-      router.push(redirect);
+      router.push(redirect || '/');
       alert('Successful Login');
     } catch (err) {
       alert(err.response.data.message);
       console.log(err.response.data);
     }
   };
-  return (
-    <Layout title="Login">
-      <form className={classes.form} onSubmit={submitHandler}>
-        <Typography component="h1" variant="h1">
-          Login
-        </Typography>
-        <List>
-          <ListItem>
-            <TextField
-              variant="outlined"
-              fullWidth
-              id="email"
-              label="Email"
-              inputProps={{ type: 'email' }}
-              onChange={(e) => setEmail(e.target.value)}
-            ></TextField>
-          </ListItem>
-          <ListItem>
-            <TextField
-              variant="outlined"
-              fullWidth
-              id="password"
-              label="Password"
-              inputProps={{ type: 'password' }}
-              onChange={(e) => setPassword(e.target.value)}
-            ></TextField>
-          </ListItem>
-          <ListItem>
-            <Button
-              variant="contained"
-              type="submit"
-              fullWidth
-              color="secondary"
-            >
-              Login
-            </Button>
-          </ListItem>
-          <ListItem>
-            Don't have an account? &nbsp;
-            <NextLink href="/register" passHref>
-              <Link>Register</Link>
-            </NextLink>
-          </ListItem>
-        </List>
-      </form>
-    </Layout>
-  );
+
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    if (userInfo) {
+      router.push('/');
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
+  if (loading) {
+    return <CircularProgress />;
+  } else {
+    return (
+      <Layout title="Login">
+        <form className={classes.form} onSubmit={submitHandler}>
+          <Typography component="h1" variant="h1">
+            Login
+          </Typography>
+          <List>
+            <ListItem>
+              <TextField
+                variant="outlined"
+                fullWidth
+                id="email"
+                label="Email"
+                inputProps={{ type: 'email' }}
+                onChange={(e) => setEmail(e.target.value)}
+              ></TextField>
+            </ListItem>
+            <ListItem>
+              <TextField
+                variant="outlined"
+                fullWidth
+                id="password"
+                label="Password"
+                inputProps={{ type: 'password' }}
+                onChange={(e) => setPassword(e.target.value)}
+              ></TextField>
+            </ListItem>
+            <ListItem>
+              <Button
+                variant="contained"
+                type="submit"
+                fullWidth
+                color="secondary"
+              >
+                Login
+              </Button>
+            </ListItem>
+            <ListItem>
+              Don't have an account? &nbsp;
+              <NextLink href={`/register?redirect=${redirect || '/'}`} passHref>
+                <Link>Register</Link>
+              </NextLink>
+            </ListItem>
+          </List>
+        </form>
+      </Layout>
+    );
+  }
 }

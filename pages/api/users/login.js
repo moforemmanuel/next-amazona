@@ -7,8 +7,8 @@ import db from '../../../utils/db';
 const handler = nc();
 
 handler.post(async (req, res) => {
-  console.log(req);
-  console.log(req.body.email, req.body.password);
+  // console.log(req);
+  // console.log(req.body.email, req.body.password);
   await db.connect();
   const user = await User.findOne({ email: req.body.email });
   await db.disconnect();

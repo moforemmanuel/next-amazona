@@ -30,6 +30,7 @@ export default function Layout({ title, description, children }) {
   const { resolvedTheme, setTheme } = useTheme();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+  
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
   if (!mounted) return null;
