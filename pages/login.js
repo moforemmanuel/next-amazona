@@ -14,8 +14,17 @@ import NextLink from 'next/link';
 import axios from 'axios';
 import { Store } from '../utils/Store';
 import { useRouter } from 'next/router';
+import { Controller, useForm } from 'react-hook-form';
+import { useSnackbar } from 'notistack';
 
 export default function Login() {
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm();
+
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const classes = useStyles();
   const { state, dispatch } = React.useContext(Store);
   const { userInfo } = state;
@@ -28,11 +37,12 @@ export default function Login() {
   //   }
   // }, []);
 
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  // const [email, setEmail] = React.useState('');
+  // const [password, setPassword] = React.useState('');
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
+  const submitHandler = async ({ email, password }) => {
+    // e.preventDefault();
+    closeSnackbar();
     try {
       const { data } = await axios.post(
         '/api/users/login',
@@ -47,10 +57,12 @@ export default function Login() {
 
       //redirect
       router.push(redirect || '/');
-      alert('Successful Login');
+      enqueueSnackbar(`Welcome back ${data.name}`, { variant: 'success' });
     } catch (err) {
-      alert(err.response.data.message);
-      console.log(err.response.data);
+      enqueueSnackbar(
+        err.response.data ? err.response.data.message : err.message,
+        { variant: 'error' }
+      );
     }
   };
 
@@ -69,30 +81,70 @@ export default function Login() {
   } else {
     return (
       <Layout title="Login">
-        <form className={classes.form} onSubmit={submitHandler}>
+        <form className={classes.form} onSubmit={handleSubmit(submitHandler)}>
           <Typography component="h1" variant="h1">
             Login
           </Typography>
           <List>
             <ListItem>
-              <TextField
-                variant="outlined"
-                fullWidth
-                id="email"
-                label="Email"
-                inputProps={{ type: 'email' }}
-                onChange={(e) => setEmail(e.target.value)}
-              ></TextField>
+              <Controller
+                name="email"
+                control={control}
+                defaultValue=""
+                rules={{
+                  required: true,
+                  pattern: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
+                }}
+                render={({ field }) => (
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    id="email"
+                    label="Email"
+                    inputProps={{ type: 'email' }}
+                    // onChange={(e) => setEmail(e.target.value)}
+                    error={Boolean(errors.email)}
+                    helperText={
+                      errors.email
+                        ? errors.email.type === 'pattern'
+                          ? 'Email is not valid'
+                          : 'Email is required'
+                        : ''
+                    }
+                    {...field}
+                  ></TextField>
+                )}
+              ></Controller>
             </ListItem>
             <ListItem>
-              <TextField
-                variant="outlined"
-                fullWidth
-                id="password"
-                label="Password"
-                inputProps={{ type: 'password' }}
-                onChange={(e) => setPassword(e.target.value)}
-              ></TextField>
+              <Controller
+                name="password"
+                control={control}
+                defaultValue=""
+                rules={{
+                  required: true,
+                  minLength: 6,
+                }}
+                render={({ field }) => (
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    id="password"
+                    label="Password"
+                    inputProps={{ type: 'password' }}
+                    // onChange={(e) => setPassword(e.target.value)}
+                    error={Boolean(errors.email)}
+                    helperText={
+                      errors.password
+                        ? errors.password.type === 'minLength'
+                          ? 'Password should be atleast 6 characters'
+                          : 'Password is required'
+                        : ''
+                    }
+                    {...field}
+                  ></TextField>
+                )}
+              ></Controller>
             </ListItem>
             <ListItem>
               <Button

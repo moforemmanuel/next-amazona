@@ -54,8 +54,10 @@ function reducer(state, action) {
     }
 
     case 'USER_LOGOUT': {
-      Cookies.remove('userInfo');
-      Cookies.remove('cartItems');
+      // Cookies.remove('userInfo');
+      // Cookies.remove('cartItems');
+      Cookies.set('userInfo', null);
+      Cookies.set('cartItems', JSON.stringify([]));
       return { ...state, userInfo: null, cart: { cartItems: [] } };
     }
     default:

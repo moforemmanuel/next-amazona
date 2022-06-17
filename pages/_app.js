@@ -9,6 +9,7 @@ import Globalstyles from '../utils/Globalstyles';
 import { ThemeProvider } from 'next-themes';
 import { StoreProvider } from '../utils/Store';
 import { useEffect } from 'react';
+import { SnackbarProvider } from 'notistack';
 
 //client side cache, shared for the whole user session
 const clientSideEmotionCache = createEmotionCache();
@@ -24,21 +25,26 @@ function MyApp(props) {
   return (
     <ThemeProvider themes={['light', 'dark', 'system']}>
       <CacheProvider value={emotionCache}>
-        <StoreProvider>
-          <Head>
-            <meta
-              name="viewport"
-              content="initial-scale=1, width=device-width"
-            />
-          </Head>
-          <PageProvider>
-            <CssBaseline />
-            <Globalstyles />
-            <Component {...pageProps} />
-          </PageProvider>
-        </StoreProvider>
+        <SnackbarProvider
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <StoreProvider>
+            <Head>
+              <meta
+                name="viewport"
+                content="initial-scale=1, width=device-width"
+              />
+            </Head>
+            <PageProvider>
+              <CssBaseline />
+              <Globalstyles />
+              <Component {...pageProps} />
+            </PageProvider>
+          </StoreProvider>
+        </SnackbarProvider>
       </CacheProvider>
     </ThemeProvider>
+
     // <Component {...pageProps} />
   );
 }
